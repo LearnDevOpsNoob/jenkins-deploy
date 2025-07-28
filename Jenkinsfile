@@ -6,11 +6,12 @@ pipeline {
         string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Git branch to deploy')
         choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Target environment')
     }
-    environment {
-        // We'll add Netlify related environment variables later.
-        // For now, you can see how to use parameters in environment if needed.
-        // Example: NETLIFY_SITE_ID could be chosen based on ENV later.
-    }
+    // environment {
+    //     // We'll add Netlify related environment variables later.
+    //     // For now, you can see how to use parameters in environment if needed.
+    //     // Example: NETLIFY_SITE_ID could be chosen based on ENV later.
+    //     TEMP_ENV = "placeholder" // just placeholdr as this object cannot be empty
+    // }
 
     tools {
         nodejs 'Node 22'
