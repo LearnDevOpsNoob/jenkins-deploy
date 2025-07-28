@@ -29,9 +29,9 @@ pipeline {
                 // Here you would typically install dependencies and build your Angular app.
                 // For example:
                 echo "Installing dependencies..."
-                sh 'npm ci'
+                bat 'npm install'
                 echo "Building the Angular application..."
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
         stage('Deploy to Netlify') {
