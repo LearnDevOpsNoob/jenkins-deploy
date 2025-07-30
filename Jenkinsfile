@@ -88,29 +88,32 @@ pipeline {
         failure {
             script {
                 echo "❌ Deployment failed for ${params.BRANCH_NAME}. --- Initiating rollback..."
-                withCredentials([
-                        string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN'),
-                        string(credentialsId: 'NETLIFY_SITE_ID_DEV', variable: 'NETLIFY_SITE_ID_DEV'),
-                        string(credentialsId: 'NETLIFY_SITE_ID_STAGING', variable: 'NETLIFY_SITE_ID_STAGING'),
-                        string(credentialsId: 'NETLIFY_SITE_ID_PROD', variable: 'NETLIFY_SITE_ID_PROD')
-                    ]) {
 
-                    //Site ID mapped to ENV
+                // Properly bind credentials first
+                withCredentials([
+                    string(credentialsId: 'NETLIFY_SITE_ID_DEV', variable: 'SITE_ID_DEV'),
+                    string(credentialsId: 'NETLIFY_SITE_ID_STAGING', variable: 'SITE_ID_STAGING'),
+                    string(credentialsId: 'NETLIFY_SITE_ID_PROD', variable: 'SITE_ID_PROD'),
+                    string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN')
+                ]) {
                     def siteIdMap = [
-                        dev: NETLIFY_SITE_ID_DEV,
-                        staging: NETLIFY_SITE_ID_STAGING,
-                        prod: NETLIFY_SITE_ID_PROD
+                        dev: SITE_ID_DEV,
+                        staging: SITE_ID_STAGING,
+                        prod: SITE_ID_PROD
                     ]
-                        
                     def siteId = siteIdMap[params.ENV]
+
+                    // Inject as environment variables
                     withEnv([
-                        "NETLIFY_AUTH_TOKEN=${credentials('NETLIFY_AUTH_TOKEN')}",
+                        "NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN}",
                         "SITE_ID=${siteId}"
                     ]) {
-                        bat """netlify rollback --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN%"""
+                        // ✅ Use %SITE_ID% and %NETLIFY_AUTH_TOKEN% in bat command
+                        bat 'netlify rollback --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN%'
                     }
                 }
-            }            
-        }
+            }
+    }
+
     }
 }
