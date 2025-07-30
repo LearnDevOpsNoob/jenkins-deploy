@@ -43,9 +43,10 @@ pipeline {
                 // sh 'netlify deploy --prod --auth=$NETLIFY_TOKEN --site=$NETLIFY_SITE_ID --dir=dist/your-angular-app/browser'
                 
                 script {
-                    // infer angular app
-                    def angularConfig = readJSON file: 'angular.json'
-                    def appName = angularConfig['defaultProject']
+                    // infer angular app -- didn't worked
+                    // def angularConfig = readJSON file: 'angular.json'
+                    // def appName = angularConfig['defaultProject']
+                    def appName = "default-app"
                     def outputDir = "dist/${appName}/browser"
 
                     // Deploy using Netlify CLI securely
