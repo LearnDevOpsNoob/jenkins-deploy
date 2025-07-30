@@ -120,7 +120,8 @@ pipeline {
                     bat 'netlify link --id %SITE_ID%'
 
                     // Step 2: Perform rollback
-                    bat 'netlify rollback --auth=%NETLIFY_AUTH_TOKEN%'
+                    bat 'netlify rollback'
+                    // bat 'netlify rollback --auth=%NETLIFY_AUTH_TOKEN%'
                     }
                 }
             }
