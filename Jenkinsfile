@@ -68,11 +68,19 @@ pipeline {
                     
 
                     // Deploy using Netlify CLI
-                    withEnv(["NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN}"]) {
-                    bat """
-                        netlify deploy --dir=${outputDir} --site=${siteId} --auth=%NETLIFY_AUTH_TOKEN% --prod
-                    """
-                    }
+                    // withEnv(["NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN}"]) {
+                    //     bat """
+                    //         netlify deploy --dir=${outputDir} --site=${siteId} --auth=%NETLIFY_AUTH_TOKEN% --prod
+                    //     """
+                    // }
+
+                        withEnv([
+                            "OUTPUT_DIR=${outputDir}",
+                            "SITE_ID=${siteId}",
+                            "NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN}"
+                        ]) {
+                            bat 'netlify deploy --dir=%OUTPUT_DIR% --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN% --prod'
+                        }
                     }
                     
                 }
