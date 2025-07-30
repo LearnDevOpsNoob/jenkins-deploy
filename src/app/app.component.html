@@ -1,1 +1,60 @@
-<h1>Default App -- Staging</h1>
+<main style="padding: 30px; background: #f9f9f9; font-family: Arial, sans-serif;">
+
+  <!-- Centered Heading -->
+  <h1 style="text-align: center; font-weight: bold; margin-bottom: 40px; font-size: 2rem; color: #333;">
+    Jenkins Deployment Steps & Considerations -- Staging
+  </h1>
+
+  <!-- Cards Container -->
+  <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+    <!-- Card 1: Setup Jenkins -->
+    <div style="flex: 1 1 300px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white;">
+      <h3>1. Setup Jenkins</h3>
+      <ul>
+        <li>Install Jenkins (Linux/Windows/Container)</li>
+        <li>Install necessary plugins (Git, NodeJS, Netlify, etc.)</li>
+        <li>Configure credentials (GitHub, Netlify tokens)</li>
+      </ul>
+    </div>
+
+    <!-- Card 2: Create Pipeline -->
+    <div style="flex: 1 1 300px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white;">
+      <h3>2. Create Jenkins Pipeline</h3>
+      <ul>
+        <li>Use Declarative or Scripted Pipeline</li>
+        <li>Add parameters: BRANCH_NAME, ENV, DEPLOY_VERSION</li>
+        <li>Stages: Checkout → Build → Deploy</li>
+      </ul>
+    </div>
+
+    <!-- Card 3: Build and Deploy Logic -->
+    <div style="flex: 1 1 300px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white;">
+      <h3>3. Build & Deploy Logic</h3>
+      <ul>
+        <li>Install Node.js, run <code>npm install</code></li>
+        <li>Build Angular using <code>ng build --configuration=ENV</code></li>
+        <li>Use Netlify CLI or EC2 scripts to deploy</li>
+      </ul>
+    </div>
+
+    <!-- Card 4: Rollback Mechanism -->
+    <div style="flex: 1 1 300px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white;">
+      <h3>4. Rollback Strategy</h3>
+      <ul>
+        <li>Backup previous deployment version</li>
+        <li>Use Netlify CLI or EC2 snapshots to rollback</li>
+        <li>Log rollback info in a file or console</li>
+      </ul>
+    </div>
+
+    <!-- Card 5: Notifications & Logs -->
+    <div style="flex: 1 1 300px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white;">
+      <h3>5. Notifications & Logs</h3>
+      <ul>
+        <li>Send email on success/failure</li>
+        <li>Configure Jenkins Email plugin</li>
+        <li>Maintain build logs & artifacts</li>
+      </ul>
+    </div>
+  </div>
+</main>
