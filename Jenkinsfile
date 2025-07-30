@@ -43,24 +43,37 @@ pipeline {
                 // sh 'netlify deploy --prod --auth=$NETLIFY_TOKEN --site=$NETLIFY_SITE_ID --dir=dist/your-angular-app/browser'
                 
                 script {
-                    //Site ID mapped to ENV
+                    
+                    def appName = "default-app"
+                    def outputDir = "dist/${appName}/browser"
 
+                    // Deploy using Netlify CLI securely
+                    withCredentials([
+                        string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN'),
+                        string(credentialsId: 'NETLIFY_SITE_ID_DEV', variable: 'NETLIFY_SITE_ID_DEV'),
+                        string(credentialsId: 'NETLIFY_SITE_ID_STAGING', variable: 'NETLIFY_SITE_ID_STAGING'),
+                        string(credentialsId: 'NETLIFY_SITE_ID_PROD', variable: 'NETLIFY_SITE_ID_PROD')
+                    ]) {
+
+                    //Site ID mapped to ENV
                     def siteIdMap = [
-                        dev: credentials('NETLIFY_SITE_ID_DEV'),
-                        staging: credentials('NETLIFY_SITE_ID_STAGING'),
-                        prod: credentials('NETLIFY_SITE_ID_PROD')
+                        dev: NETLIFY_SITE_ID_DEV,
+                        staging: NETLIFY_SITE_ID_STAGING,
+                        prod: NETLIFY_SITE_ID_PROD
                     ]
 
                     def siteId = siteIdMap[params.ENV]
                     echo "Deploying to Netlify site ID: ${siteId} (env: ${params.ENV})"
                     
-                    def appName = "default-app"
-                    def outputDir = "dist/${appName}/browser"
 
                     // Deploy using Netlify CLI
+                    withEnv(["NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN}"]) {
                     bat """
-                        netlify deploy --dir=${outputDir} --site=${siteId} --auth=${NETLIFY_AUTH_TOKEN} --prod
+                        netlify deploy --dir=${outputDir} --site=${siteId} --auth=%NETLIFY_AUTH_TOKEN% --prod
                     """
+                    }
+                    }
+                    
                 }
             }
         }
