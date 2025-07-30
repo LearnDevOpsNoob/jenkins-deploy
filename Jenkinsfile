@@ -100,7 +100,7 @@ pipeline {
                 // Properly bind credentials first
                 withCredentials([
                 string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN'),
-                string(credentialsId: "SITE_ID_${ENV.toUpperCase()}", variable: 'SITE_ID')
+                string(credentialsId: "NETLIFY_SITE_ID_${ENV.toUpperCase()}", variable: 'SITE_ID')
             ]) {
                 withEnv([
                     'NODE_OPTIONS=--no-warnings'
