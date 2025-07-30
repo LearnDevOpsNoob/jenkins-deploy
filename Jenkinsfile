@@ -109,7 +109,7 @@ pipeline {
                         "SITE_ID=${siteId}"
                     ]) {
                         // ✅ Use %SITE_ID% and %NETLIFY_AUTH_TOKEN% in bat command
-                        bat 'netlify rollback --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN%'
+                        bat 'netlify rollback --site-id=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN%'
                     }
                 }
             }
