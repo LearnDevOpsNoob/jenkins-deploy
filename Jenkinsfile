@@ -43,8 +43,9 @@ pipeline {
                 // sh 'netlify deploy --prod --auth=$NETLIFY_TOKEN --site=$NETLIFY_SITE_ID --dir=dist/your-angular-app/browser'
                 
                 script {
-                    
-                    def appName = "default-app"
+                    // infer angular app
+                    def angularConfig = readJSON file: 'angular.json'
+                    def appName = angularConfig['defaultProject']
                     def outputDir = "dist/${appName}/browser"
 
                     // Deploy using Netlify CLI securely
@@ -85,10 +86,21 @@ pipeline {
             echo "✅ Build and Checkout, Deploy successful for ${params.BRANCH_NAME} (version ${params.DEPLOY_VERSION})"
         }
         failure {
-            echo "❌ Deployment failed for ${params.BRANCH_NAME}. --- Initiating rollback..."
-            // Here you can add rollback logic, e.g., trigger a netlify rollback.
-            // For example:
-            // sh 'netlify rollback --auth=$NETLIFY_TOKEN --site=$NETLIFY_SITE_ID'
+            script {
+                echo "❌ Deployment failed for ${params.BRANCH_NAME}. --- Initiating rollback..."
+                def siteIdMap = [
+                    dev: credentials('NETLIFY_SITE_ID_DEV'),
+                    staging: credentials('NETLIFY_SITE_ID_STAGING'),
+                    prod: credentials('NETLIFY_SITE_ID_PROD')
+                ]
+                def siteId = siteIdMap[params.ENV]
+                withEnv([
+                    "NETLIFY_AUTH_TOKEN=${credentials('NETLIFY_AUTH_TOKEN')}",
+                    "SITE_ID=${siteId}"
+                ]) {
+                    bat """netlify rollback --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN%"""
+                }
+            }            
         }
     }
 }
