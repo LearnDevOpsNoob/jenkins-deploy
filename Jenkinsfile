@@ -88,17 +88,27 @@ pipeline {
         failure {
             script {
                 echo "❌ Deployment failed for ${params.BRANCH_NAME}. --- Initiating rollback..."
-                def siteIdMap = [
-                    dev: credentials('NETLIFY_SITE_ID_DEV'),
-                    staging: credentials('NETLIFY_SITE_ID_STAGING'),
-                    prod: credentials('NETLIFY_SITE_ID_PROD')
-                ]
-                def siteId = siteIdMap[params.ENV]
-                withEnv([
-                    "NETLIFY_AUTH_TOKEN=${credentials('NETLIFY_AUTH_TOKEN')}",
-                    "SITE_ID=${siteId}"
-                ]) {
-                    bat """netlify rollback --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN%"""
+                withCredentials([
+                        string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN'),
+                        string(credentialsId: 'NETLIFY_SITE_ID_DEV', variable: 'NETLIFY_SITE_ID_DEV'),
+                        string(credentialsId: 'NETLIFY_SITE_ID_STAGING', variable: 'NETLIFY_SITE_ID_STAGING'),
+                        string(credentialsId: 'NETLIFY_SITE_ID_PROD', variable: 'NETLIFY_SITE_ID_PROD')
+                    ]) {
+
+                    //Site ID mapped to ENV
+                    def siteIdMap = [
+                        dev: NETLIFY_SITE_ID_DEV,
+                        staging: NETLIFY_SITE_ID_STAGING,
+                        prod: NETLIFY_SITE_ID_PROD
+                    ]
+                        
+                    def siteId = siteIdMap[params.ENV]
+                    withEnv([
+                        "NETLIFY_AUTH_TOKEN=${credentials('NETLIFY_AUTH_TOKEN')}",
+                        "SITE_ID=${siteId}"
+                    ]) {
+                        bat """netlify rollback --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN%"""
+                    }
                 }
             }            
         }
