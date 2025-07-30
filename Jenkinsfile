@@ -6,12 +6,12 @@ pipeline {
         string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Git branch to deploy')
         choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Target environment')
     }
-    // environment {
-    //     // We'll add Netlify related environment variables later.
-    //     // For now, you can see how to use parameters in environment if needed.
-    //     // Example: NETLIFY_SITE_ID could be chosen based on ENV later.
-    //     TEMP_ENV = "placeholder" // just placeholdr as this object cannot be empty
-    // }
+    environment {
+        // We'll add Netlify related environment variables later.
+        // For now, you can see how to use parameters in environment if needed.
+        // Example: NETLIFY_SITE_ID could be chosen based on ENV later.
+        NETLIFY_AUTH_TOKEN = credentials('NETLIFY_AUTH_TOKEN')
+    }
 
     tools {
         nodejs 'Node 22'
@@ -41,6 +41,27 @@ pipeline {
                 
                 // Example command (for now just echo; later replace with netlify deploy command):
                 // sh 'netlify deploy --prod --auth=$NETLIFY_TOKEN --site=$NETLIFY_SITE_ID --dir=dist/your-angular-app/browser'
+                
+                script {
+                    //Site ID mapped to ENV
+
+                    def siteIdMap = [
+                        dev: credentials('NETLIFY_SITE_ID_DEV'),
+                        staging: credentials('NETLIFY_SITE_ID_STAGING'),
+                        prod: credentials('NETLIFY_SITE_ID_PROD')
+                    ]
+
+                    def siteId = siteIdMap[params.ENV]
+                    echo "Deploying to Netlify site ID: ${siteId} (env: ${params.ENV})"
+                    
+                    def appName = "default-app"
+                    def outputDir = "dist/${appName}/browser"
+
+                    // Deploy using Netlify CLI
+                    bat """
+                        netlify deploy --dir=${outputDir} --site=${siteId} --auth=${NETLIFY_AUTH_TOKEN} --prod
+                    """
+                }
             }
         }
     }
