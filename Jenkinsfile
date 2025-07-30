@@ -99,31 +99,17 @@ pipeline {
 
                 // Properly bind credentials first
                 withCredentials([
-                    string(credentialsId: 'NETLIFY_SITE_ID_DEV', variable: 'SITE_ID_DEV'),
-                    string(credentialsId: 'NETLIFY_SITE_ID_STAGING', variable: 'SITE_ID_STAGING'),
-                    string(credentialsId: 'NETLIFY_SITE_ID_PROD', variable: 'SITE_ID_PROD'),
-                    string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN')
+                string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN'),
+                string(credentialsId: "SITE_ID_${ENV.toUpperCase()}", variable: 'SITE_ID')
+            ]) {
+                withEnv([
+                    'NODE_OPTIONS=--no-warnings'
                 ]) {
-                    def siteIdMap = [
-                        dev: SITE_ID_DEV,
-                        staging: SITE_ID_STAGING,
-                        prod: SITE_ID_PROD
-                    ]
-                    def siteId = siteIdMap[params.ENV]
-
-                    // Inject as environment variables
-                    withEnv([
-                        "NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN}",
-                        "SITE_ID=${siteId}"
-                    ]) {
-                         // Step 1: Link site manually using site ID
-                    bat 'netlify link --id %SITE_ID%'
-
-                    // Step 2: Perform rollback
-                    bat 'netlify rollback'
-                    // bat 'netlify rollback --auth=%NETLIFY_AUTH_TOKEN%'
-                    }
+                    bat "netlify --version"
+                    bat "netlify link --id %SITE_ID%"
+                    bat "netlify rollback"
                 }
+            }
             }
     }
 
