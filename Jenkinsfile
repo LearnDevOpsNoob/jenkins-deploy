@@ -74,12 +74,25 @@ pipeline {
                     //     """
                     // }
 
+                        // withEnv([
+                        //     "OUTPUT_DIR=${outputDir}",
+                        //     "SITE_ID=${siteId}",
+                        //     "NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN}"
+                        // ]) {
+                        //     bat 'netlify deploy --dir=%OUTPUT_DIR% --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN% --prod'
+                        //     echo Exit code is: %ERRORLEVEL%
+                        //     if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                        // }
                         withEnv([
                             "OUTPUT_DIR=${outputDir}",
                             "SITE_ID=${siteId}",
                             "NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN}"
                         ]) {
-                            bat 'netlify deploy --dir=%OUTPUT_DIR% --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN% --prod'
+                            bat """
+                                netlify deploy --dir=%OUTPUT_DIR% --site=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN% --prod
+                                echo Exit code is: %ERRORLEVEL%
+                                if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+                            """
                         }
                     }
                     
@@ -94,22 +107,22 @@ pipeline {
             echo "✅ Build and Checkout, Deploy successful for ${params.BRANCH_NAME} (version ${params.DEPLOY_VERSION})"
         }
         failure {
-            script {
-                echo "❌ Deployment failed for ${params.BRANCH_NAME}. --- Initiating rollback..."
-
+            script {    
+                echo "❌ Deployment failed for ${BRANCH_NAME}. No rollback attempted because Netlify CLI no longer supports rollback."
+                echo "👉 Visit the Netlify Deploys Dashboard to manually trigger a rollback:"
                 // Properly bind credentials first
-                withCredentials([
-                string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN'),
-                string(credentialsId: "NETLIFY_SITE_ID_${ENV.toUpperCase()}", variable: 'SITE_ID')
-            ]) {
-                withEnv([
-                    'NODE_OPTIONS=--no-warnings'
-                ]) {
-                    bat "netlify --version"
-                    bat "netlify link --id %SITE_ID%"
-                    bat "netlify rollback"
-                }
-            }
+            //     withCredentials([
+            //     string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN'),
+            //     string(credentialsId: "NETLIFY_SITE_ID_${ENV.toUpperCase()}", variable: 'SITE_ID')
+            // ]) {
+            //     withEnv([
+            //         'NODE_OPTIONS=--no-warnings'
+            //     ]) {
+            //         bat "netlify --version"
+            //         bat "netlify link --id %SITE_ID%"
+            //         bat "netlify rollback"
+            //     }
+            // }
             }
     }
 
