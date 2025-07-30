@@ -116,8 +116,11 @@ pipeline {
                         "NETLIFY_AUTH_TOKEN=${NETLIFY_AUTH_TOKEN}",
                         "SITE_ID=${siteId}"
                     ]) {
-                        // ✅ Use %SITE_ID% and %NETLIFY_AUTH_TOKEN% in bat command
-                        bat 'netlify rollback --site-id=%SITE_ID% --auth=%NETLIFY_AUTH_TOKEN%'
+                         // Step 1: Link site manually using site ID
+                    bat 'netlify link --id %SITE_ID%'
+
+                    // Step 2: Perform rollback
+                    bat 'netlify rollback --auth=%NETLIFY_AUTH_TOKEN%'
                     }
                 }
             }
