@@ -44,10 +44,15 @@ pipeline {
                 
                 script {
                     // infer angular app -- didn't worked
-                    // def angularConfig = readJSON file: 'angular.json'
-                    // def appName = angularConfig['defaultProject']
-                    def appName = "default-app"
-                    def outputDir = "dist/${appName}/browser"
+                    def angularConfig = readJSON file: 'angular.json'
+                    def appName = angularConfig['defaultProject'] 
+                    
+                    //
+                    // We can comment the line below and uncomment the two lines above if we want to triger a deploy failure which will send an email 
+                    //
+
+                    // def appName = "default-app"
+                    // def outputDir = "dist/${appName}/browser"
 
                     // Deploy using Netlify CLI securely
                     withCredentials([
@@ -111,6 +116,24 @@ pipeline {
             script {    
                 echo "❌ Deployment failed for ${BRANCH_NAME}. No rollback attempted because Netlify CLI no longer supports rollback."
                 echo "👉 Visit the Netlify Deploys Dashboard to manually trigger a rollback:"
+
+                emailext(
+                    to: 'akashbgce@gmail.com',  // 👈 Replace with your recipient email (or use system default)
+                    subject: "[JENKINS] ❌ Angular Deploy Failed - DEV/STAGING/PROD",
+                    body: """
+                        <p><strong>Deployment Failed</strong></p>
+                        <ul>
+                            <li><b>Branch:</b> ${params.BRANCH_NAME}</li>
+                            <li><b>Version:</b> ${params.DEPLOY_VERSION}</li>
+                            <li><b>Environment:</b> ${params.ENV}</li>
+                        </ul>
+                        <p>This is an automated failure notification for your Angular deployment pipeline.</p>
+                    """,
+                    mimeType: 'text/html'
+                )
+            
+            }
+
                 // Properly bind credentials first
             //     withCredentials([
             //     string(credentialsId: 'NETLIFY_AUTH_TOKEN', variable: 'NETLIFY_AUTH_TOKEN'),
@@ -124,7 +147,6 @@ pipeline {
             //         bat "netlify rollback"
             //     }
             // }
-            }
     }
 
     }
